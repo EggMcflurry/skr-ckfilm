@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skräckfilms-Vault | Halloween Watchlist</title>
+    <!-- Google Fonts för kusligt typsnitt -->
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Special+Elite&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome för ikoner -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-color: #0c090d;
+            --card-bg: #161218;
+            --accent-blood: #8b0000;
+            --accent-blood-hover: #a30000;
+            --glow-orange: #ff6b00;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --border-color: #2d2430;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 50% 20%, rgba(139, 0, 0, 0.15) 0%, transparent 60%),
+                radial-gradient(circle at 20% 80%, rgba(255, 107, 0, 0.05) 0%, transparent 50%);
+            background-attachment: fixed;
+            padding-bottom: 4rem;
+        }
+
+        header {
+            text-align: center;
+            padding: 2rem 1rem 1.5rem 1rem;
+        }
+
+        h1 {
+            font-family: 'Creepster', cursive;
+            font-size: 2.5rem;
+            color: var(--accent-blood);
+            text-shadow: 0 0 10px rgba(139, 0, 0, 0.8), 0 0 20px rgba(255, 107, 0, 0.3);
+            letter-spacing: 2px;
+            margin-bottom: 0.3rem;
+        }
+
+        @media (min-width: 600px) {
+            h1 { font-size: 3.5rem; }
+        }
+
+        header p {
+            font-family: 'Special Elite', cursive;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Formulär-boxen */
+        .form-card {
+            background-color: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.25rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        @media (min-width: 600px) {
+            .form-card { padding: 2rem; }
+        }
+
+        .form-card::before {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            background: linear-gradient(45deg, var(--accent-blood), transparent, var(--glow-orange));
+            z-index: -1;
+            border-radius: 13px;
+            opacity: 0.3;
+        }
+
+        .form-card h2 {
+            font-family: 'Special Elite', cursive;
+            margin-bottom: 1.2rem;
+            color: var(--glow-orange);
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .grid-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1.2rem;
+        }
+
+        @media (min-width: 600px) {
+            .grid-form {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+            .full-width {
+                grid-column: 1 / -1;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        input, select {
+            background-color: #0a070b;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 0.85rem; /* Större träffyta för mobila enheter */
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem; /* Minst 16px förhindrar automatisk zoom på iOS */
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--glow-orange);
+            box-shadow: 0 0 8px rgba(255, 107, 0, 0.3);
+        }
+
+        button.btn-add {
+            background-color: var(--accent-blood);
+            color: white;
+            border: none;
+            padding: 0.95rem 1.5rem;
+            font-family: 'Special Elite', cursive;
+            font-size: 1.1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(139, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        button.btn-add:active {
+            transform: scale(0.98);
+        }
+
+        /* Filter sektion - scrollbar på mindre skärmar om det behövs */
+        .filters {
+            display: flex;
+            justify-content: flex-start;
+            gap: 8px;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            padding-bottom: 5px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        @media (min-width: 600px) {
+            .filters {
+                justify-content: center;
+            }
+        }
+
+        .filter-btn {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 0.6rem 1.2rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn.active, .filter-btn:hover {
+            background-color: var(--glow-orange);
+            color: #000;
+            border-color: var(--glow-orange);
+            font-weight: 600;
+            box-shadow: 0 0 10px rgba(255, 107, 0, 0.4);
+        }
+
+        /* Filmlista / Grid */
+        .movie-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.2rem;
+        }
+
+        @media (min-width: 550px) {
+            .movie-grid {
+                grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            }
+        }
+
+        .movie-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+        }
+
+        .movie-card.watched {
+            opacity: 0.6;
+        }
+
+        .movie-poster {
+            height: 160px;
+            background-color: #000;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .movie-poster-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1a1218, #050505);
+            color: var(--accent-blood);
+            font-size: 2.5rem;
+        }
+
+        .movie-content {
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            justify-content: space-between;
+        }
+
+        .movie-title {
+            font-family: 'Special Elite', cursive;
+            font-size: 1.15rem;
+            margin-bottom: 0.3rem;
+            color: var(--text-main);
+        }
+
+        .movie-info {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .skull-rating {
+            color: #ff4d4d;
+            letter-spacing: 2px;
+        }
+
+        .movie-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: auto;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 0.7rem; /* Större för mobiltryck */
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-toggle {
+            background-color: #27212b;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+
+        .movie-card.watched .btn-toggle {
+            background-color: #1b4332;
+            color: #d8f3dc;
+            border-color: #2d6a4f;
+        }
+
+        .btn-delete {
+            background-color: rgba(139, 0, 0, 0.2);
+            color: #ff6b6b;
+            border: 1px solid rgba(139, 0, 0, 0.4);
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-muted);
+            font-family: 'Special Elite', cursive;
+            font-size: 1.1rem;
+        }
+
+        .empty-state i {
+            font-size: 2.5rem;
+            color: var(--accent-blood);
+            margin-bottom: 0.8rem;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1><i class="fa-solid fa-spider"></i> Skräckfilms-Vault <i class="fa-solid fa-ghost"></i></h1>
+        <p>Samla dina värsta mardrömmar inför Halloween</p>
+    </header>
+
+    <div class="container">
+        <!-- Lägg till film-formulär -->
+        <div class="form-card">
+            <h2><i class="fa-solid fa-skull"></i> Lägg till skräckis</h2>
+            <form id="movieForm">
+                <div class="grid-form">
+                    <div class="form-group">
+                        <label for="title">Filmtitel</label>
+                        <input type="text" id="title" required placeholder="t.ex. Halloween, Scream...">
+                    </div>
+                    <div class="form-group">
+                        <label for="director">Regissör / Skapare</label>
+                        <input type="text" id="director" placeholder="t.ex. John Carpenter">
+                    </div>
+                    <div class="form-group">
+                        <label for="genre">Genre</label>
+                        <select id="genre">
+                            <option value="Slasher">Slasher</option>
+                            <option value="Övernaturligt">Övernaturligt / Spöken</option>
+                            <option value="Zombie">Zombie / Apokalyps</option>
+                            <option value="Psykologisk">Psykologisk skräck</option>
+                            <option value="Monster / Gore">Monster / Gore</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="scareFactor">Skräckfaktor (1-5)</label>
+                        <select id="scareFactor">
+                            <option value="1">💀 (Mys-läskigt)</option>
+                            <option value="2">💀💀 (Lite rysningar)</option>
+                            <option value="3">💀💀💀 (Obehagligt)</option>
+                            <option value="4">💀💀💀💀 (Mardrömmar)</option>
+                            <option value="5">💀💀💀💀💀 (Riktigt sjukt!)</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="image">Bildlänk (Valfri poster-URL)</label>
+                        <input type="url" id="image" placeholder="https://exempel.se/bild.jpg">
+                    </div>
+                </div>
+                <button type="submit" class="btn-add"><i class="fa-solid fa-plus"></i> Lägg till i Watchlist</button>
+            </form>
+        </div>
+
+        <!-- Filterknappar -->
+        <div class="filters">
+            <button class="filter-btn active" data-filter="all">Alla filmer</button>
+            <button class="filter-btn" data-filter="unwatched">Att se</button>
+            <button class="filter-btn" data-filter="watched">Sedda</button>
+        </div>
+
+        <!-- Filmlista Grid -->
+        <div id="movieGrid" class="movie-grid">
+            <!-- Filmer renderas dynamiskt här -->
+        </div>
+    </div>
+
+    <script>
+        let movies = JSON.parse(localStorage.getItem('horror_movies')) || [
+            {
+                id: 1,
+                title: "Halloween (1978)",
+                director: "John Carpenter",
+                genre: "Slasher",
+                scareFactor: 4,
+                image: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=600&q=80",
+                watched: false
+            },
+            {
+                id: 2,
+                title: "The Exorcist",
+                director: "William Friedkin",
+                genre: "Övernaturligt",
+                scareFactor: 5,
+                image: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=600&q=80",
+                watched: true
+            }
+        ];
+
+        let currentFilter = 'all';
+
+        const movieForm = document.getElementById('movieForm');
+        const movieGrid = document.getElementById('movieGrid');
+        const filterButtons = document.querySelectorAll('.filter-btn');
+
+        function saveMovies() {
+            localStorage.setItem('horror_movies', JSON.stringify(movies));
+        }
+
+        function renderMovies() {
+            movieGrid.innerHTML = '';
+
+            let filteredMovies = movies.filter(movie => {
+                if (currentFilter === 'unwatched') return !movie.watched;
+                if (currentFilter === 'watched') return movie.watched;
+                return true;
+            });
+
+            if (filteredMovies.length === 0) {
+                movieGrid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fa-solid fa-spider"></i>
+                        Inga filmer här ännu... Vågar du lägga till en?
+                    </div>
+                `;
+                return;
+            }
+
+            filteredMovies.forEach(movie => {
+                const card = document.createElement('div');
+                card.className = `movie-card ${movie.watched ? 'watched' : ''}`;
+
+                const skulls = '💀'.repeat(parseInt(movie.scareFactor));
+
+                let posterContent = '';
+                if (movie.image && movie.image.trim() !== '') {
+                    posterContent = `<div class="movie-poster" style="background-image: url('${movie.image}')"></div>`;
+                } else {
+                    posterContent = `<div class="movie-poster"><div class="movie-poster-placeholder"><i class="fa-solid fa-film"></i></div></div>`;
+                }
+
+                card.innerHTML = `
+                    ${posterContent}
+                    <div class="movie-content">
+                        <div>
+                            <h3 class="movie-title">${escapeHtml(movie.title)}</h3>
+                            <div class="movie-info">
+                                <span><i class="fa-solid fa-clapperboard"></i> ${escapeHtml(movie.director || 'Okänd')} (${escapeHtml(movie.genre)})</span>
+                                <span class="skull-rating">${skulls}</span>
+                            </div>
+                        </div>
+                        <div class="movie-actions">
+                            <button class="action-btn btn-toggle" onclick="toggleWatched(${movie.id})">
+                                <i class="fa-solid ${movie.watched ? 'fa-rotate-left' : 'fa-check'}"></i> 
+                                ${movie.watched ? 'Ångra' : 'Sedd'}
+                            </button>
+                            <button class="action-btn btn-delete" onclick="deleteMovie(${movie.id})">
+                                <i class="fa-solid fa-trash"></i> Ta bort
+                            </button>
+                        </div>
+                    </div>
+                `;
+                movieGrid.appendChild(card);
+            });
+        }
+
+        movieForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const newTitle = document.getElementById('title').value;
+            const newDirector = document.getElementById('director').value;
+            const newGenre = document.getElementById('genre').value;
+            const newScare = document.getElementById('scareFactor').value;
+            const newImage = document.getElementById('image').value;
+
+            const newMovie = {
+                id: Date.now(),
+                title: newTitle,
+                director: newDirector,
+                genre: newGenre,
+                scareFactor: newScare,
+                image: newImage,
+                watched: false
+            };
+
+            movies.push(newMovie);
+            saveMovies();
+            renderMovies();
+            movieForm.reset();
+        });
+
+        function toggleWatched(id) {
+            movies = movies.map(movie => {
+                if (movie.id === id) {
+                    return { ...movie, watched: !movie.watched };
+                }
+                return movie;
+            });
+            saveMovies();
+            renderMovies();
+        }
+
+        function deleteMovie(id) {
+            if(confirm("Vill du förvisa denna film till mörkret för evigt?")) {
+                movies = movies.filter(movie => movie.id !== id);
+                saveMovies();
+                renderMovies();
+            }
+        }
+
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.getAttribute('data-filter');
+                renderMovies();
+            });
+        });
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        renderMovies();
+    </script>
+</body>
+</html>
