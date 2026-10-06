@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Skräckfilms-Vault</title>
+    <title>FearBase</title>
     <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Special+Elite&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -15,7 +15,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background-color: var(--bg-color); color: var(--text-main); font-family: 'Inter', sans-serif; min-height: 100vh; padding: 2rem 1rem; }
         .container { max-width: 450px; margin: 0 auto; background: var(--card-bg); border: 2px solid var(--border-color); padding: 2rem; border-radius: 12px; }
-        h1 { font-family: 'Creepster', cursive; color: var(--accent-blood); text-align: center; margin-bottom: 1.5rem; font-size: 2rem; }
+        h1 { font-family: 'Creepster', cursive; color: var(--accent-blood); text-align: center; margin-bottom: 1.5rem; font-size: 2.5rem; letter-spacing: 2px; }
         .form-group { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1rem; }
         label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; }
         input, select { background: #0a070b; border: 1px solid var(--border-color); padding: 0.85rem; color: var(--text-main); border-radius: 6px; width: 100%; }
@@ -38,18 +38,20 @@
 
     <!-- Inloggningsvy -->
     <div id="authContainer" class="container">
-        <h1>Skräckfilms-Vault</h1>
-        <p style="text-align: center; color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.9rem;">Ange ditt namn och telefonnummer</p>
+        <h1>FearBase</h1>
+        <p style="text-align: center; color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.9rem;">Ange ditt namn och vault-code
+
+        </p>
         <form id="loginForm">
             <div class="form-group">
                 <label>Ditt namn</label>
                 <input type="text" id="nameInput" required placeholder="t.ex. Anna">
             </div>
             <div class="form-group">
-                <label>Telefonnummer</label>
-                <input type="tel" id="phoneInput" required placeholder="t.ex. 0701234567">
+                <label>Vault-code</label>
+                <input type="password" id="secretCodeInput" required placeholder="kod">
             </div>
-            <button type="submit">Logga in / Gå med</button>
+            <button type="submit">Logga in</button>
         </form>
     </div>
 
@@ -57,7 +59,7 @@
     <div id="appView">
         <div class="user-bar">
             <div>
-                <h2 style="font-family: 'Creepster', cursive; color: var(--accent-blood);">Skräckfilms-Vault</h2>
+                <h2 style="font-family: 'Creepster', cursive; color: var(--accent-blood); font-size: 1.8rem; letter-spacing: 1px;">FearBase</h2>
                 <p style="font-size: 0.85rem; color: var(--text-muted);" id="userDisplay"></p>
             </div>
             <button id="logoutBtn" style="background: #333; width: auto; padding: 0.5rem 1rem; margin: 0;">Logga ut</button>
@@ -99,74 +101,59 @@
         const SUPABASE_ANON_KEY = 'sb_publishable_Jd88Etk-decOvPp-onu65g_tXvk-rTW';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        // plz dont fuck me up, i dont pallar
+        const VAULT_SECRET_CODE = "1312";
+
         const authContainer = document.getElementById('authContainer');
         const appView = document.getElementById('appView');
         const loginForm = document.getElementById('loginForm');
         const nameInput = document.getElementById('nameInput');
-        const phoneInput = document.getElementById('phoneInput');
+        const secretCodeInput = document.getElementById('secretCodeInput');
         const userDisplay = document.getElementById('userDisplay');
         const logoutBtn = document.getElementById('logoutBtn');
         const movieForm = document.getElementById('movieForm');
         const movieGrid = document.getElementById('movieGrid');
         const submitBtn = document.getElementById('submitBtn');
 
-        let currentUser = localStorage.getItem('vault_phone');
         let currentUserName = localStorage.getItem('vault_name');
 
-        if (currentUser && currentUserName) {
-            showApp(currentUserName, currentUser);
+        if (currentUserName) {
+            showApp(currentUserName);
         }
 
-        loginForm.addEventListener('submit', async (e) => {
+        loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
+            const enteredCode = secretCodeInput.value.trim();
             const name = nameInput.value.trim();
-            const phone = phoneInput.value.trim();
 
-            let { data: existingUser } = await supabaseClient
-                .from('users')
-                .select('*')
-                .eq('phone', phone)
-                .single();
-
-            if (!existingUser) {
-                // Skapa ny användare med både telefonnummer och namn
-                const { error: insertError } = await supabaseClient
-                    .from('users')
-                    .insert([{ phone: phone, name: name }]);
-
-                if (insertError) {
-                    alert('Kunde inte registrera (Kanske är gränsen på 15 nådd?): ' + insertError.message);
-                    return;
-                }
-            } else {
-                // Uppdatera namnet om det ändrats
-                await supabaseClient
-                    .from('users')
-                    .update({ name: name })
-                    .eq('phone', phone);
+            if (enteredCode !== VAULT_SECRET_CODE) {
+                alert('Felaktig Vault-kod! Fråga i gänget efter rätt kod.');
+                return;
             }
 
-            localStorage.setItem('vault_phone', phone);
+            if (!name) {
+                alert('Du måste skriva ett namn!');
+                return;
+            }
+
             localStorage.setItem('vault_name', name);
-            currentUser = phone;
             currentUserName = name;
-            showApp(name, phone);
+            showApp(name);
         });
 
-        function showApp(name, phone) {
+        function showApp(name) {
             authContainer.style.display = 'none';
             appView.style.display = 'block';
-            userDisplay.innerText = `Inloggad som: ${name} (${phone})`;
+            userDisplay.innerText = `Inloggad som: ${name}`;
             fetchMovies();
         }
 
         logoutBtn.addEventListener('click', () => {
-            localStorage.removeItem('vault_phone');
             localStorage.removeItem('vault_name');
             authContainer.style.display = 'block';
             appView.style.display = 'none';
             nameInput.value = '';
-            phoneInput.value = '';
+            secretCodeInput.value = '';
         });
 
         async function fetchMovies() {
@@ -187,8 +174,7 @@
                     ? `<img src="${movie.image_url}" class="movie-img" alt="Filmomslag">`
                     : `<div class="movie-img" style="display:flex;align-items:center;justify-content:center;color:var(--text-muted);">Ingen bild</div>`;
 
-                // Jämför om filmen är tillagd av inloggat telefonnummer
-                const canDelete = movie.director === currentUser;
+                const canDelete = movie.director === currentUserName;
                 const deleteButtonHtml = canDelete 
                     ? `<button class="delete-btn" onclick="deleteMovie(${movie.id})"><i class="fa-solid fa-trash"></i> Ta bort film</button>` 
                     : '';
@@ -198,7 +184,7 @@
                     <div class="movie-content">
                         <h3 class="movie-title">${escapeHtml(movie.title)}</h3>
                         <p style="font-size: 0.85rem; color: var(--glow-orange);">Genre: ${escapeHtml(movie.genre)}</p>
-                        <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: auto;">Tillagd av: ${escapeHtml(currentUserName || movie.director || 'Okänd')}</p>
+                        <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: auto;">Tillagd av: ${escapeHtml(movie.director || 'Okänd')}</p>
                         ${deleteButtonHtml}
                     </div>
                 `;
@@ -241,7 +227,7 @@
 
                 const newMovie = {
                     title: title,
-                    director: currentUser, // Sparar telefonnumret i director-kolumnen för ägarskap
+                    director: currentUserName, 
                     genre: genre,
                     scare_factor: "3",
                     watched: false,
